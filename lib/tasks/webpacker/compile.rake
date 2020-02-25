@@ -34,10 +34,26 @@ end
 # Compile packs after we've compiled all other assets during precompilation
 skip_webpacker_precompile = %w(no false n f).include?(ENV["WEBPACKER_PRECOMPILE"])
 
-unless skip_webpacker_precompile
-  if Rake::Task.task_defined?("assets:precompile")
-    enhance_assets_precompile
-  else
-    Rake::Task.define_task("assets:precompile" => ["webpacker:yarn_install", "webpacker:compile"])
-  end
-end
+# We remove this code to make it work  in opsworks
+#
+#
+# In opsworks we run into issues because opsworks is so old and crusty
+# we can not easily install a current version of node.
+#
+# We also can not specify the WEBPACKER_PRECOMPILE env var early enough in the setup and deploy process
+# That means despite our best effort this piece of code was always running.
+#
+# It would then error out because we don't have a version of node'
+# Which was causing the whole setup to fail
+#
+# And because forking a branch is literally easier than than making changes to opsworks this is the solution we have gone with.
+#
+# From here we can specify this specific commit and repo in the gem file.
+# And everyting works again.
+# unless skip_webpacker_precompile
+#   if Rake::Task.task_defined?("assets:precompile")
+#     enhance_assets_precompile
+#   else
+#     Rake::Task.define_task("assets:precompile" => ["webpacker:yarn_install", "webpacker:compile"])
+#   end
+# end
